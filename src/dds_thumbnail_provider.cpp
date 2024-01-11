@@ -9,7 +9,6 @@
 #include <functional>
 
 #include "./DirectXTex/DirectXTex.h"
-#include "./DirectXTex/DDS.h"
 #include "scope_exit.h"
 
 // using namespace Gdiplus;

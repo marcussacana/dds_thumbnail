@@ -1,36 +1,58 @@
 //-------------------------------------------------------------------------------------
 // DirectXTex.inl
-//  
+//
 // DirectX Texture Library
 //
-// THIS CODE AND INFORMATION IS PROVIDED "AS IS" WITHOUT WARRANTY OF
-// ANY KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO
-// THE IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
-// PARTICULAR PURPOSE.
-//
-// Copyright (c) Microsoft Corporation. All rights reserved.
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 //
 // http://go.microsoft.com/fwlink/?LinkId=248926
 //-------------------------------------------------------------------------------------
 
-#if defined(_MSC_VER) && (_MSC_VER > 1000)
 #pragma once
-#endif
+
+//=====================================================================================
+// Bitmask flags enumerator operators
+//=====================================================================================
+DEFINE_ENUM_FLAG_OPERATORS(CP_FLAGS);
+DEFINE_ENUM_FLAG_OPERATORS(DDS_FLAGS);
+DEFINE_ENUM_FLAG_OPERATORS(TGA_FLAGS);
+DEFINE_ENUM_FLAG_OPERATORS(WIC_FLAGS);
+DEFINE_ENUM_FLAG_OPERATORS(TEX_FR_FLAGS);
+DEFINE_ENUM_FLAG_OPERATORS(TEX_FILTER_FLAGS);
+DEFINE_ENUM_FLAG_OPERATORS(TEX_PMALPHA_FLAGS);
+DEFINE_ENUM_FLAG_OPERATORS(TEX_COMPRESS_FLAGS);
+DEFINE_ENUM_FLAG_OPERATORS(CNMAP_FLAGS);
+DEFINE_ENUM_FLAG_OPERATORS(CMSE_FLAGS);
+DEFINE_ENUM_FLAG_OPERATORS(CREATETEX_FLAGS);
+
+// WIC_FILTER modes match TEX_FILTER modes
+constexpr WIC_FLAGS operator|(WIC_FLAGS a, TEX_FILTER_FLAGS b) { return static_cast<WIC_FLAGS>(static_cast<unsigned long>(a) | static_cast<unsigned long>(b & TEX_FILTER_MODE_MASK)); }
+constexpr WIC_FLAGS operator|(TEX_FILTER_FLAGS a, WIC_FLAGS b) { return static_cast<WIC_FLAGS>(static_cast<unsigned long>(a & TEX_FILTER_MODE_MASK) | static_cast<unsigned long>(b)); }
+
+// TEX_PMALPHA_SRGB match TEX_FILTER_SRGB
+constexpr TEX_PMALPHA_FLAGS operator|(TEX_PMALPHA_FLAGS a, TEX_FILTER_FLAGS b) { return static_cast<TEX_PMALPHA_FLAGS>(static_cast<unsigned long>(a) | static_cast<unsigned long>(b & TEX_FILTER_SRGB_MASK)); }
+constexpr TEX_PMALPHA_FLAGS operator|(TEX_FILTER_FLAGS a, TEX_PMALPHA_FLAGS b) { return static_cast<TEX_PMALPHA_FLAGS>(static_cast<unsigned long>(a & TEX_FILTER_SRGB_MASK) | static_cast<unsigned long>(b)); }
+
+// TEX_COMPRESS_SRGB match TEX_FILTER_SRGB
+constexpr TEX_COMPRESS_FLAGS operator|(TEX_COMPRESS_FLAGS a, TEX_FILTER_FLAGS b) { return static_cast<TEX_COMPRESS_FLAGS>(static_cast<unsigned long>(a) | static_cast<unsigned long>(b & TEX_FILTER_SRGB_MASK)); }
+constexpr TEX_COMPRESS_FLAGS operator|(TEX_FILTER_FLAGS a, TEX_COMPRESS_FLAGS b) { return static_cast<TEX_COMPRESS_FLAGS>(static_cast<unsigned long>(a & TEX_FILTER_SRGB_MASK) | static_cast<unsigned long>(b)); }
+
 
 //=====================================================================================
 // DXGI Format Utilities
 //=====================================================================================
 
 _Use_decl_annotations_
-inline bool IsValid( DXGI_FORMAT fmt )
+constexpr bool __cdecl IsValid(DXGI_FORMAT fmt) noexcept
 {
-    return ( static_cast<size_t>(fmt) >= 1 && static_cast<size_t>(fmt) <= 120 );
+    return (static_cast<size_t>(fmt) >= 1 && static_cast<size_t>(fmt) <= 191);
 }
 
 _Use_decl_annotations_
-inline bool IsCompressed( DXGI_FORMAT fmt )
+inline bool __cdecl IsCompressed(DXGI_FORMAT fmt) noexcept
 {
-    switch ( fmt )
+    switch (fmt)
     {
     case DXGI_FORMAT_BC1_TYPELESS:
     case DXGI_FORMAT_BC1_UNORM:
@@ -61,49 +83,9 @@ inline bool IsCompressed( DXGI_FORMAT fmt )
 }
 
 _Use_decl_annotations_
-inline bool IsPacked( DXGI_FORMAT fmt )
+inline bool __cdecl IsPalettized(DXGI_FORMAT fmt) noexcept
 {
-    switch( fmt )
-    {
-    case DXGI_FORMAT_R8G8_B8G8_UNORM:
-    case DXGI_FORMAT_G8R8_G8B8_UNORM:
-    case DXGI_FORMAT_YUY2: // 4:2:2 8-bit
-    case DXGI_FORMAT_Y210: // 4:2:2 10-bit
-    case DXGI_FORMAT_Y216: // 4:2:2 16-bit
-        return true;
-
-    default:
-        return false;
-    }
-}
-
-_Use_decl_annotations_
-inline bool IsPlanar( DXGI_FORMAT fmt )
-{
-    switch ( static_cast<int>(fmt) )
-    {
-    case DXGI_FORMAT_NV12:      // 4:2:0 8-bit
-    case DXGI_FORMAT_P010:      // 4:2:0 10-bit
-    case DXGI_FORMAT_P016:      // 4:2:0 16-bit
-    case DXGI_FORMAT_420_OPAQUE:// 4:2:0 8-bit
-    case DXGI_FORMAT_NV11:      // 4:1:1 8-bit
-        return true;
-
-    case 118 /* DXGI_FORMAT_D16_UNORM_S8_UINT */:
-    case 119 /* DXGI_FORMAT_R16_UNORM_X8_TYPELESS */:
-    case 120 /* DXGI_FORMAT_X16_TYPELESS_G8_UINT */:
-        // These are Xbox One platform specific types
-        return true;
-
-    default:
-        return false;
-    }
-}
-
-_Use_decl_annotations_
-inline bool IsPalettized( DXGI_FORMAT fmt )
-{
-    switch( fmt )
+    switch (fmt)
     {
     case DXGI_FORMAT_AI44:
     case DXGI_FORMAT_IA44:
@@ -117,62 +99,9 @@ inline bool IsPalettized( DXGI_FORMAT fmt )
 }
 
 _Use_decl_annotations_
-inline bool IsVideo( DXGI_FORMAT fmt )
+inline bool __cdecl IsSRGB(DXGI_FORMAT fmt) noexcept
 {
-    switch ( fmt )
-    {
-    case DXGI_FORMAT_AYUV:
-    case DXGI_FORMAT_Y410:
-    case DXGI_FORMAT_Y416:
-    case DXGI_FORMAT_NV12:
-    case DXGI_FORMAT_P010:
-    case DXGI_FORMAT_P016:
-    case DXGI_FORMAT_YUY2:
-    case DXGI_FORMAT_Y210:
-    case DXGI_FORMAT_Y216:
-    case DXGI_FORMAT_NV11:
-        // These video formats can be used with the 3D pipeline through special view mappings
-
-    case DXGI_FORMAT_420_OPAQUE:
-    case DXGI_FORMAT_AI44:
-    case DXGI_FORMAT_IA44:
-    case DXGI_FORMAT_P8:
-    case DXGI_FORMAT_A8P8:
-        // These are limited use video formats not usable in any way by the 3D pipeline
-        return true;
-
-    default:
-        return false;
-    }
-}
-
-_Use_decl_annotations_
-inline bool IsDepthStencil( DXGI_FORMAT fmt )
-{
-    switch( static_cast<int>(fmt) )
-    {
-    case DXGI_FORMAT_D32_FLOAT_S8X24_UINT:
-    case DXGI_FORMAT_R32_FLOAT_X8X24_TYPELESS:
-    case DXGI_FORMAT_X32_TYPELESS_G8X24_UINT:
-    case DXGI_FORMAT_D32_FLOAT:
-    case DXGI_FORMAT_D24_UNORM_S8_UINT:
-    case DXGI_FORMAT_R24_UNORM_X8_TYPELESS:
-    case DXGI_FORMAT_X24_TYPELESS_G8_UINT:
-    case DXGI_FORMAT_D16_UNORM:
-    case 118 /* DXGI_FORMAT_D16_UNORM_S8_UINT */:
-    case 119 /* DXGI_FORMAT_R16_UNORM_X8_TYPELESS */:
-    case 120 /* DXGI_FORMAT_X16_TYPELESS_G8_UINT */:
-        return true;
-
-    default:
-        return false;
-    }
-}
-
-_Use_decl_annotations_
-inline bool IsSRGB( DXGI_FORMAT fmt )
-{
-    switch( fmt )
+    switch (fmt)
     {
     case DXGI_FORMAT_R8G8B8A8_UNORM_SRGB:
     case DXGI_FORMAT_BC1_UNORM_SRGB:
@@ -188,142 +117,14 @@ inline bool IsSRGB( DXGI_FORMAT fmt )
     }
 }
 
-_Use_decl_annotations_
-inline bool IsTypeless( DXGI_FORMAT fmt, bool partialTypeless )
-{
-    switch( static_cast<int>(fmt) )
-    {
-    case DXGI_FORMAT_R32G32B32A32_TYPELESS:
-    case DXGI_FORMAT_R32G32B32_TYPELESS:
-    case DXGI_FORMAT_R16G16B16A16_TYPELESS:
-    case DXGI_FORMAT_R32G32_TYPELESS:
-    case DXGI_FORMAT_R32G8X24_TYPELESS:
-    case DXGI_FORMAT_R10G10B10A2_TYPELESS:
-    case DXGI_FORMAT_R8G8B8A8_TYPELESS:
-    case DXGI_FORMAT_R16G16_TYPELESS:
-    case DXGI_FORMAT_R32_TYPELESS:
-    case DXGI_FORMAT_R24G8_TYPELESS:
-    case DXGI_FORMAT_R8G8_TYPELESS:
-    case DXGI_FORMAT_R16_TYPELESS:
-    case DXGI_FORMAT_R8_TYPELESS:
-    case DXGI_FORMAT_BC1_TYPELESS:
-    case DXGI_FORMAT_BC2_TYPELESS:
-    case DXGI_FORMAT_BC3_TYPELESS:
-    case DXGI_FORMAT_BC4_TYPELESS:
-    case DXGI_FORMAT_BC5_TYPELESS:
-    case DXGI_FORMAT_B8G8R8A8_TYPELESS:
-    case DXGI_FORMAT_B8G8R8X8_TYPELESS:
-    case DXGI_FORMAT_BC6H_TYPELESS:
-    case DXGI_FORMAT_BC7_TYPELESS:
-        return true;
-
-    case DXGI_FORMAT_R32_FLOAT_X8X24_TYPELESS:
-    case DXGI_FORMAT_X32_TYPELESS_G8X24_UINT:
-    case DXGI_FORMAT_R24_UNORM_X8_TYPELESS:
-    case DXGI_FORMAT_X24_TYPELESS_G8_UINT:
-        return partialTypeless;
-
-    case 119 /* DXGI_FORMAT_R16_UNORM_X8_TYPELESS */:
-    case 120 /* DXGI_FORMAT_X16_TYPELESS_G8_UINT */:
-        // These are Xbox One platform specific types
-        return partialTypeless;
-
-    default:
-        return false;
-    }
-}
-
-_Use_decl_annotations_
-inline bool HasAlpha( DXGI_FORMAT fmt )
-{
-    switch( static_cast<int>(fmt) )
-    {
-    case DXGI_FORMAT_R32G32B32A32_TYPELESS:
-    case DXGI_FORMAT_R32G32B32A32_FLOAT:
-    case DXGI_FORMAT_R32G32B32A32_UINT:
-    case DXGI_FORMAT_R32G32B32A32_SINT:
-    case DXGI_FORMAT_R16G16B16A16_TYPELESS:
-    case DXGI_FORMAT_R16G16B16A16_FLOAT:
-    case DXGI_FORMAT_R16G16B16A16_UNORM:
-    case DXGI_FORMAT_R16G16B16A16_UINT:
-    case DXGI_FORMAT_R16G16B16A16_SNORM:
-    case DXGI_FORMAT_R16G16B16A16_SINT:
-    case DXGI_FORMAT_R10G10B10A2_TYPELESS:
-    case DXGI_FORMAT_R10G10B10A2_UNORM:
-    case DXGI_FORMAT_R10G10B10A2_UINT:
-    case DXGI_FORMAT_R8G8B8A8_TYPELESS:
-    case DXGI_FORMAT_R8G8B8A8_UNORM:
-    case DXGI_FORMAT_R8G8B8A8_UNORM_SRGB:
-    case DXGI_FORMAT_R8G8B8A8_UINT:
-    case DXGI_FORMAT_R8G8B8A8_SNORM:
-    case DXGI_FORMAT_R8G8B8A8_SINT:
-    case DXGI_FORMAT_A8_UNORM:
-    case DXGI_FORMAT_BC1_TYPELESS:
-    case DXGI_FORMAT_BC1_UNORM:
-    case DXGI_FORMAT_BC1_UNORM_SRGB:
-    case DXGI_FORMAT_BC2_TYPELESS:
-    case DXGI_FORMAT_BC2_UNORM:
-    case DXGI_FORMAT_BC2_UNORM_SRGB:
-    case DXGI_FORMAT_BC3_TYPELESS:
-    case DXGI_FORMAT_BC3_UNORM:
-    case DXGI_FORMAT_BC3_UNORM_SRGB:
-    case DXGI_FORMAT_B5G5R5A1_UNORM:
-    case DXGI_FORMAT_B8G8R8A8_UNORM:
-    case DXGI_FORMAT_R10G10B10_XR_BIAS_A2_UNORM:
-    case DXGI_FORMAT_B8G8R8A8_TYPELESS:
-    case DXGI_FORMAT_B8G8R8A8_UNORM_SRGB:
-    case DXGI_FORMAT_BC7_TYPELESS:
-    case DXGI_FORMAT_BC7_UNORM:
-    case DXGI_FORMAT_BC7_UNORM_SRGB:
-    case DXGI_FORMAT_AYUV:
-    case DXGI_FORMAT_Y410:
-    case DXGI_FORMAT_Y416:
-    case DXGI_FORMAT_AI44:
-    case DXGI_FORMAT_IA44:
-    case DXGI_FORMAT_A8P8:
-    case DXGI_FORMAT_B4G4R4A4_UNORM:
-        return true;
-
-    case 116 /* DXGI_FORMAT_R10G10B10_7E3_A2_FLOAT */:
-    case 117 /* DXGI_FORMAT_R10G10B10_6E4_A2_FLOAT */:
-        // These are Xbox One platform specific types
-        return true;
-
-    default:
-        return false;
-    }
-}
-
-_Use_decl_annotations_
-inline size_t ComputeScanlines( DXGI_FORMAT fmt, size_t height )
-{
-    if ( IsCompressed(fmt) )
-    {
-        return std::max<size_t>( 1, (height + 3) / 4 );
-    }
-    else if ( fmt == DXGI_FORMAT_NV11 )
-    {
-        // Direct3D makes this simplifying assumption, although it is larger than the 4:1:1 data
-        return height * 2;
-    }
-    else if ( IsPlanar(fmt) )
-    {
-        return height + ( ( height + 1 ) >> 1 );
-    }
-    else
-    {
-        return height;
-    }
-}
 
 //=====================================================================================
 // Image I/O
 //=====================================================================================
 _Use_decl_annotations_
-inline HRESULT SaveToDDSMemory( const Image& image, DWORD flags, Blob& blob )
+inline HRESULT __cdecl SaveToDDSMemory(const Image& image, DDS_FLAGS flags, Blob& blob) noexcept
 {
-    TexMetadata mdata;
-    memset( &mdata, 0, sizeof(mdata) );
+    TexMetadata mdata = {};
     mdata.width = image.width;
     mdata.height = image.height;
     mdata.depth = 1;
@@ -332,14 +133,13 @@ inline HRESULT SaveToDDSMemory( const Image& image, DWORD flags, Blob& blob )
     mdata.format = image.format;
     mdata.dimension = TEX_DIMENSION_TEXTURE2D;
 
-    return SaveToDDSMemory( &image, 1, mdata, flags, blob );
+    return SaveToDDSMemory(&image, 1, mdata, flags, blob);
 }
 
 _Use_decl_annotations_
-inline HRESULT SaveToDDSFile( const Image& image, DWORD flags, LPCWSTR szFile )
+inline HRESULT __cdecl SaveToDDSFile(const Image& image, DDS_FLAGS flags, const wchar_t* szFile) noexcept
 {
-    TexMetadata mdata;
-    memset( &mdata, 0, sizeof(mdata) );
+    TexMetadata mdata = {};
     mdata.width = image.width;
     mdata.height = image.height;
     mdata.depth = 1;
@@ -348,5 +148,45 @@ inline HRESULT SaveToDDSFile( const Image& image, DWORD flags, LPCWSTR szFile )
     mdata.format = image.format;
     mdata.dimension = TEX_DIMENSION_TEXTURE2D;
 
-    return SaveToDDSFile( &image, 1, mdata, flags, szFile );
+    return SaveToDDSFile(&image, 1, mdata, flags, szFile);
+}
+
+
+//=====================================================================================
+// Compatability helpers
+//=====================================================================================
+_Use_decl_annotations_
+inline HRESULT __cdecl GetMetadataFromTGAMemory(const void* pSource, size_t size, TexMetadata& metadata) noexcept
+{
+    return GetMetadataFromTGAMemory(pSource, size, TGA_FLAGS_NONE, metadata);
+}
+
+_Use_decl_annotations_
+inline HRESULT __cdecl GetMetadataFromTGAFile(const wchar_t* szFile, TexMetadata& metadata) noexcept
+{
+    return GetMetadataFromTGAFile(szFile, TGA_FLAGS_NONE, metadata);
+}
+
+_Use_decl_annotations_
+inline HRESULT __cdecl LoadFromTGAMemory(const void* pSource, size_t size, TexMetadata* metadata, ScratchImage& image) noexcept
+{
+    return LoadFromTGAMemory(pSource, size, TGA_FLAGS_NONE, metadata, image);
+}
+
+_Use_decl_annotations_
+inline HRESULT __cdecl LoadFromTGAFile(const wchar_t* szFile, TexMetadata* metadata, ScratchImage& image) noexcept
+{
+    return LoadFromTGAFile(szFile, TGA_FLAGS_NONE, metadata, image);
+}
+
+_Use_decl_annotations_
+inline HRESULT __cdecl SaveToTGAMemory(const Image& image, Blob& blob, const TexMetadata* metadata) noexcept
+{
+    return SaveToTGAMemory(image, TGA_FLAGS_NONE, blob, metadata);
+}
+
+_Use_decl_annotations_
+inline HRESULT __cdecl SaveToTGAFile(const Image& image, const wchar_t* szFile, const TexMetadata* metadata) noexcept
+{
+    return SaveToTGAFile(image, TGA_FLAGS_NONE, szFile, metadata);
 }

@@ -68,7 +68,7 @@ STDAPI DllCanUnloadNow(void)
 }
 
 STDAPI DllRegisterServer(void)
-{
+{		
 	HRESULT hr;
 
 	wchar_t szModule[MAX_PATH];

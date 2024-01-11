@@ -13,12 +13,12 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="src\DirectXTex">
-      <UniqueIdentifier>{6638c314-19ee-4027-99cb-781d78d55c55}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\src\GlobalExportFunctions.def">
+      <Filter>src</Filter>
+    </None>
+    <None Include="..\src\DirectXTex\DirectXTex.inl">
       <Filter>src</Filter>
     </None>
   </ItemGroup>
@@ -35,63 +35,6 @@
     <ClCompile Include="..\src\Reg.cpp">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\DirectXTex\BC.cpp">
-      <Filter>src\DirectXTex</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\DirectXTex\BC4BC5.cpp">
-      <Filter>src\DirectXTex</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\DirectXTex\BC6HBC7.cpp">
-      <Filter>src\DirectXTex</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\DirectXTex\BCDirectCompute.cpp">
-      <Filter>src\DirectXTex</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\DirectXTex\DirectXTexCompress.cpp">
-      <Filter>src\DirectXTex</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\DirectXTex\DirectXTexCompressGPU.cpp">
-      <Filter>src\DirectXTex</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\DirectXTex\DirectXTexConvert.cpp">
-      <Filter>src\DirectXTex</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\DirectXTex\DirectXTexD3D11.cpp">
-      <Filter>src\DirectXTex</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\DirectXTex\DirectXTexDDS.cpp">
-      <Filter>src\DirectXTex</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\DirectXTex\DirectXTexFlipRotate.cpp">
-      <Filter>src\DirectXTex</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\DirectXTex\DirectXTexImage.cpp">
-      <Filter>src\DirectXTex</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\DirectXTex\DirectXTexMipmaps.cpp">
-      <Filter>src\DirectXTex</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\DirectXTex\DirectXTexMisc.cpp">
-      <Filter>src\DirectXTex</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\DirectXTex\DirectXTexNormalMaps.cpp">
-      <Filter>src\DirectXTex</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\DirectXTex\DirectXTexPMAlpha.cpp">
-      <Filter>src\DirectXTex</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\DirectXTex\DirectXTexResize.cpp">
-      <Filter>src\DirectXTex</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\DirectXTex\DirectXTexTGA.cpp">
-      <Filter>src\DirectXTex</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\DirectXTex\DirectXTexUtil.cpp">
-      <Filter>src\DirectXTex</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\DirectXTex\DirectXTexWIC.cpp">
-      <Filter>src\DirectXTex</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\ClassFactory.h">
@@ -103,11 +46,32 @@
     <ClInclude Include="..\src\Reg.h">
       <Filter>header</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\DirectXTex\DirectXTex.h">
-      <Filter>src\DirectXTex</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\scope_exit.h">
       <Filter>header</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\DirectXTex\BC.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\DirectXTex\BCDirectCompute.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\DirectXTex\d3dx12.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\DirectXTex\DDS.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\DirectXTex\DirectXTex.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\DirectXTex\DirectXTexP.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\DirectXTex\filters.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\DirectXTex\scoped.h">
+      <Filter>src</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
